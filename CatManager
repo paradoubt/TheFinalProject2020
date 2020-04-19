@@ -1,0 +1,130 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class CatManager : MonoBehaviour
+{
+    Animator anim;
+    private Rigidbody2D rb2d;
+    public float speed;
+    public int count;
+    public Text countText;
+    public Text winText;
+    public Text loseText;
+    public float jumpforce;
+
+ 
+
+
+
+
+    public int lives;
+    public Text livesText;
+
+    // Start is called before the first frame update
+    //I WILL GET THIS CAT RUNNING
+    void Start()
+    {
+        anim = GetComponent<Animator>();
+        rb2d = GetComponent<Rigidbody2D>();
+        count = 0;
+        winText.text = "";
+    }
+
+    void FixedUpdate()
+    {
+        float hozMovement = Input.GetAxis("Horizontal");
+        //float vertMovement = Input.GetAxis("Vertical");
+        //rd2d.AddForce(new Vector2(hozMovement * speed, vertMovement * speed));
+        rb2d.velocity = new Vector2(hozMovement * speed, rb2d.velocity.y);
+
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            rb2d.velocity = Vector2.up * jumpforce;
+            
+            }
+
+
+        // Walking to Idle
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            anim.SetInteger("State", 1);
+        }
+        if (Input.GetKeyUp(KeyCode.RightArrow))
+        {
+            anim.SetInteger("State", 0);
+        }
+        // for first animation
+
+        // Jumping to Idle
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            anim.SetInteger("State", 0);
+        }
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            anim.SetInteger("State", 1);
+        }
+        // for second animation
+        {
+            //float moveHorizontal = Input.GetAxis("Horizontal");
+
+            //Vector2 movement = new Vector2(moveHorizontal, 0);
+
+            // rb2d.AddForce(movement * speed);
+        }
+
+        if (GameObject.FindGameObjectsWithTag("PickUp").Length == 1)
+        {
+            winText.text = "You Win Game Created By Mariana Lobeto";
+            // play audio
+            
+        }
+        if (lives ==0)
+        {
+
+            loseText.text = "You Lose";
+        }
+
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("PickUp"))
+        {
+            other.gameObject.SetActive(false);
+            count = count + 2;
+            SetCountText();
+            StartCoroutine(SpeedUP());        }
+
+
+        else if (other.gameObject.CompareTag("Sushi"))
+        {
+            other.gameObject.SetActive(false);
+            count = count - 1;
+            SetCountText();
+        }
+        else if (other.gameObject.CompareTag("PatrolEnemy"))
+        {
+            lives = lives - 1;
+            SetCountText();
+        }
+
+    }
+    void SetCountText()
+    {
+        countText.text = "Count: " + count.ToString();
+        
+        livesText.text = "Player lives: " + lives.ToString();
+    }
+
+    IEnumerator SpeedUP()
+    {
+        speed = speed * 2;
+        yield return new WaitForSeconds(1);
+        speed = 4;
+    } 
+        
+}
+
