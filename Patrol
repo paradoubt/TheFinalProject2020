@@ -1,0 +1,66 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Patrol : MonoBehaviour
+{
+    public float speed;
+    public float distance;
+
+    private bool movingRight = true;
+    public Transform groundDetection;
+
+    public LayerMask isGround;
+    public Transform wallHitBox;
+    private bool wallHit;
+
+    public float wallHitHeight;
+    public float wallHitWidth;
+
+
+    // Update is called once per frame
+    void FixedUpdate()
+
+    {
+        transform.Translate(Vector2.right * speed * Time.deltaTime);
+
+        /* RaycastHit2D groundInfo = Physics2D.Raycast(groundDetection.position, Vector2.down, distance);
+        if (groundInfo.collider == false)
+        {
+            if (movingRight == true)
+            {
+                transform.eulerAngles = new Vector3(-180, 0, 0);
+                movingRight = false;
+            }
+            else { }
+            {
+                transform.eulerAngles = new Vector3(0, 0, 0);
+                movingRight = true;
+            }
+        } */
+        wallHit = Physics2D.OverlapBox(wallHitBox.position, new Vector2(wallHitWidth, wallHitHeight), 0, isGround);
+
+        if (wallHit == true)
+        {
+            speed = speed * -1;
+        }
+
+    }
+
+    void OnCollisionEnter2D(Collision2D hit)
+    {
+        var tag = hit.gameObject.tag;
+        if (tag == "CatPlayer")
+
+        {
+            movingRight = false;
+            speed = -speed;
+        }
+
+        if (tag == "Tree2")
+        {
+            movingRight = true;
+            speed = -speed;
+        }
+    }
+}
